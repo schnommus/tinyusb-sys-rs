@@ -47,11 +47,13 @@ fn main() {
     add_all_c_files_in_dir(&mut build, "tinyusb/src");
     build
         .include("tinyusb/src")
-        .include("tinyusb/hw/mcu/st/cmsis_device_f1/Include")
+        .include("/home/seb/dev/eurorack-pmod-litex/build/colorlight_i5/software/include")
+        .include("/home/seb/dev/eurorack-pmod-litex/build/colorlight_i5/software/libc")
+        .include("/home/seb/dev/eurorack-pmod-litex/deps/pythondata-software-picolibc/pythondata_software_picolibc/data/newlib/libc/include")
+        .include("/home/seb/dev/eurorack-pmod-litex/deps/pythondata-software-picolibc/pythondata_software_picolibc/data/newlib/libc/tinystdio")
         .include(&out_dir) // for the tusb_config.h file
         .compile("tinyusb");
 
-    let target = env::var("TARGET").expect("Missing TARGET env var");
     let out_path = PathBuf::from(env::var("OUT_DIR").unwrap());
     let bindings = bindgen::Builder::default()
         .header("tinyusb/src/tusb.h")
@@ -63,11 +65,15 @@ fn main() {
         .rustfmt_bindings(true)
         .ctypes_prefix("cty")
         .clang_args(&vec![
-            "-target", &target,
+            "--target=riscv32-unknown-none-elf",
             "-fvisibility=default",
             "-fshort-enums",
         ])
         .clang_arg("-Itinyusb/src")
+        .clang_arg("-I/home/seb/dev/eurorack-pmod-litex/build/colorlight_i5/software/include")
+        .clang_arg("-I/home/seb/dev/eurorack-pmod-litex/build/colorlight_i5/software/libc")
+        .clang_arg("-I/home/seb/dev/eurorack-pmod-litex/deps/pythondata-software-picolibc/pythondata_software_picolibc/data/newlib/libc/include")
+        .clang_arg("-I/home/seb/dev/eurorack-pmod-litex/deps/pythondata-software-picolibc/pythondata_software_picolibc/data/newlib/libc/tinystdio")
         .clang_args(&include_paths)
         .generate()
         .expect("Unable to generate bindings");
