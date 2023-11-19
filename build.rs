@@ -3,8 +3,6 @@ use std::{env, path::{Path, PathBuf}};
 use std::fs::File;
 use std::io::prelude::*;
 
-mod tusb_config;
-
 fn add_all_c_files_in_dir(build: &mut Build, path: impl AsRef<Path>) {
     for entry in glob::glob(path.as_ref().join("**/*.c").to_str().unwrap()).unwrap() {
         let path = entry.unwrap();
@@ -20,8 +18,7 @@ fn main() {
     {
         let mut f = File::create(out_dir.join("tusb_config.h"))
             .expect("Failed to create tusb_config.h");
-        f.write_all(tusb_config::generate_cfg().as_bytes())
-            .expect("Failed to write to tusb_config.h");
+        f.write_all(include_bytes!("src/tusb_config.h")).ok();
     }
 
     let stdlib_litex_include_paths = vec![
@@ -35,11 +32,40 @@ fn main() {
                 "../../deps/pythondata-software-picolibc/pythondata_software_picolibc/data/newlib/libc/tinystdio"),
     ];
 
+    let common_args = vec![
+        "-D__vexriscv__",
+        "-g3",
+        "-no-pie",
+        "-fomit-frame-pointer",
+        "-Wall",
+        "-fno-builtin",
+        "-fno-stack-protector",
+        "-Wstrict-prototypes",
+        "-Wold-style-definition",
+        "-Wmissing-prototypes",
+        "-DCFG_TUSB_MCU=OPT_MCU_LUNA_EPTRI",
+        "-fdata-sections",
+        "-ffunction-sections",
+        "-fsingle-precision-constant",
+        "-fno-strict-aliasing",
+    ];
+
+    let clang_args = vec![
+        "--target=riscv32-unknown-none-elf",
+        "-fvisibility=default",
+        "-fshort-enums",
+    ];
+
     let clang_litex_include_args: Vec<String> =
         stdlib_litex_include_paths.iter().map(|s| String::from("-I") + &String::from(*s)).collect();
 
     let mut build = Build::new();
     add_all_c_files_in_dir(&mut build, "tinyusb/src");
+
+    for flag in common_args.iter() {
+        build.flag(flag);
+    }
+
     build
         .include("tinyusb/src")
         .includes(&stdlib_litex_include_paths)
@@ -55,11 +81,8 @@ fn main() {
         .layout_tests(false)
         .use_core()
         .ctypes_prefix("cty")
-        .clang_args(&vec![
-            "--target=riscv32-unknown-none-elf",
-            "-fvisibility=default",
-            "-fshort-enums",
-        ])
+        .clang_args(&common_args)
+        .clang_args(&clang_args)
         .clang_arg("-Itinyusb/src")
         .clang_args(&clang_litex_include_args)
         .generate()

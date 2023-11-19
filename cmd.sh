@@ -1,1 +1,1 @@
-CC_riscv32imac_unknown_none_elf=riscv64-linux-gnu-gcc AR_riscv32imac_unknown_none_elf=riscv64-linux-gnu-ar TARGET_CFLAGS="-D__vexriscv__ -g3 -no-pie -fomit-frame-pointer -Wall -fno-builtin -fno-stack-protector" RUST_BACKTRACE=1 cargo build --target riscv32imac-unknown-none-elf --features device
+BUILD_DIR=../../../build/colorlight_i5/ CC_riscv32imac_unknown_none_elf=riscv64-linux-gnu-gcc AR_riscv32imac_unknown_none_elf=riscv64-linux-gnu-ar RUST_BACKTRACE=1 cargo build --target riscv32imac-unknown-none-elf --features device
