@@ -23,17 +23,17 @@ fn main() {
 
     let stdlib_litex_include_paths = vec![
         concat!(env!("BUILD_DIR"),
-                "software/include"),
+                "/software/include"),
         concat!(env!("BUILD_DIR"),
-                "software/libc"),
+                "/software/libc"),
         concat!(env!("BUILD_DIR"),
-                "../../deps/pythondata-software-picolibc/pythondata_software_picolibc/data/newlib/libc/include"),
+                "/../../deps/pythondata-software-picolibc/pythondata_software_picolibc/data/newlib/libc/include"),
         concat!(env!("BUILD_DIR"),
-                "../../deps/pythondata-software-picolibc/pythondata_software_picolibc/data/newlib/libc/tinystdio"),
+                "/../../deps/pythondata-software-picolibc/pythondata_software_picolibc/data/newlib/libc/tinystdio"),
         concat!(env!("BUILD_DIR"),
-                "../../deps/litex/litex/soc/cores/cpu/vexriscv/"),
+                "/../../deps/litex/litex/soc/cores/cpu/vexriscv"),
         concat!(env!("BUILD_DIR"),
-                "../../deps/litex/litex/soc/software/include"),
+                "/../../deps/litex/litex/soc/software/include"),
     ];
 
     let common_args = vec![
