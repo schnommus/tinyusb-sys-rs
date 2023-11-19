@@ -30,9 +30,14 @@ fn main() {
                 "../../deps/pythondata-software-picolibc/pythondata_software_picolibc/data/newlib/libc/include"),
         concat!(env!("BUILD_DIR"),
                 "../../deps/pythondata-software-picolibc/pythondata_software_picolibc/data/newlib/libc/tinystdio"),
+        concat!(env!("BUILD_DIR"),
+                "../../deps/litex/litex/soc/cores/cpu/vexriscv/"),
+        concat!(env!("BUILD_DIR"),
+                "../../deps/litex/litex/soc/software/include"),
     ];
 
     let common_args = vec![
+        "-march=rv32i2p0_mac",
         "-D__vexriscv__",
         "-g3",
         "-no-pie",
@@ -61,6 +66,7 @@ fn main() {
 
     let mut build = Build::new();
     add_all_c_files_in_dir(&mut build, "tinyusb/src");
+    build.file("luna_eptri/dcd_eptri.c");
 
     for flag in common_args.iter() {
         build.flag(flag);
