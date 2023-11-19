@@ -6,7 +6,8 @@ use std::io::prelude::*;
 fn add_all_c_files_in_dir(build: &mut Build, path: impl AsRef<Path>) {
     for entry in glob::glob(path.as_ref().join("**/*.c").to_str().unwrap()).unwrap() {
         let path = entry.unwrap();
-        if path.extension().and_then(|s| s.to_str()) == Some("c") {
+        if path.extension().and_then(|s| s.to_str()) == Some("c") &&
+           !path.to_str().unwrap().contains("portable") {
            build.file(&path);
         }
     }
