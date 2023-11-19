@@ -67,6 +67,7 @@ fn main() {
     let mut build = Build::new();
     add_all_c_files_in_dir(&mut build, "tinyusb/src");
     build.file("luna_eptri/dcd_eptri.c");
+    build.file("src/usb_descriptors.c");
 
     for flag in common_args.iter() {
         build.flag(flag);
