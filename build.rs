@@ -24,33 +24,25 @@ fn main() {
             .expect("Failed to write to tusb_config.h");
     }
 
-    let include_paths = String::from_utf8(
-        Build::new()
-            .get_compiler().to_command()
-            .arg("-E").arg("-Wp,-v").arg("-xc").arg("/dev/null")
-            .stdout(std::process::Stdio::null())
-            .stderr(std::process::Stdio::piped())
-            .spawn()
-            .expect("Failed to run the compiler to get paths")
-            .wait_with_output()
-            .expect("Failed to run the compiler to get paths")
-            .stderr
-        ).unwrap()
-    .lines()
-        .filter_map(|line| line.strip_prefix(" "))
-        .map(|path| format!("-I{}", path))
-        .collect::<Vec<_>>();
+    let stdlib_litex_include_paths = vec![
+        concat!(env!("BUILD_DIR"),
+                "software/include"),
+        concat!(env!("BUILD_DIR"),
+                "software/libc"),
+        concat!(env!("BUILD_DIR"),
+                "../../deps/pythondata-software-picolibc/pythondata_software_picolibc/data/newlib/libc/include"),
+        concat!(env!("BUILD_DIR"),
+                "../../deps/pythondata-software-picolibc/pythondata_software_picolibc/data/newlib/libc/tinystdio"),
+    ];
 
-    eprintln!("include_paths={:?}", include_paths);
+    let clang_litex_include_args: Vec<String> =
+        stdlib_litex_include_paths.iter().map(|s| String::from("-I") + &String::from(*s)).collect();
 
     let mut build = Build::new();
     add_all_c_files_in_dir(&mut build, "tinyusb/src");
     build
         .include("tinyusb/src")
-        .include("/home/seb/dev/eurorack-pmod-litex/build/colorlight_i5/software/include")
-        .include("/home/seb/dev/eurorack-pmod-litex/build/colorlight_i5/software/libc")
-        .include("/home/seb/dev/eurorack-pmod-litex/deps/pythondata-software-picolibc/pythondata_software_picolibc/data/newlib/libc/include")
-        .include("/home/seb/dev/eurorack-pmod-litex/deps/pythondata-software-picolibc/pythondata_software_picolibc/data/newlib/libc/tinystdio")
+        .includes(&stdlib_litex_include_paths)
         .include(&out_dir) // for the tusb_config.h file
         .compile("tinyusb");
 
@@ -62,7 +54,6 @@ fn main() {
         .derive_default(true)
         .layout_tests(false)
         .use_core()
-        .rustfmt_bindings(true)
         .ctypes_prefix("cty")
         .clang_args(&vec![
             "--target=riscv32-unknown-none-elf",
@@ -70,11 +61,7 @@ fn main() {
             "-fshort-enums",
         ])
         .clang_arg("-Itinyusb/src")
-        .clang_arg("-I/home/seb/dev/eurorack-pmod-litex/build/colorlight_i5/software/include")
-        .clang_arg("-I/home/seb/dev/eurorack-pmod-litex/build/colorlight_i5/software/libc")
-        .clang_arg("-I/home/seb/dev/eurorack-pmod-litex/deps/pythondata-software-picolibc/pythondata_software_picolibc/data/newlib/libc/include")
-        .clang_arg("-I/home/seb/dev/eurorack-pmod-litex/deps/pythondata-software-picolibc/pythondata_software_picolibc/data/newlib/libc/tinystdio")
-        .clang_args(&include_paths)
+        .clang_args(&clang_litex_include_args)
         .generate()
         .expect("Unable to generate bindings");
 
