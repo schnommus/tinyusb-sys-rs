@@ -41,18 +41,15 @@ fn main() {
         "-march=rv32i2p0_mac",
         "-D__vexriscv__",
         "-no-pie",
-        "-fomit-frame-pointer",
         "-Wall",
         "-fno-builtin",
-        "-fno-stack-protector",
         "-Wstrict-prototypes",
         "-Wold-style-definition",
         "-Wmissing-prototypes",
         "-DCFG_TUSB_MCU=OPT_MCU_LUNA_EPTRI",
         "-fdata-sections",
         "-ffunction-sections",
-        "-fsingle-precision-constant",
-        "-fno-strict-aliasing",
+        "-O3",
     ];
 
     let clang_args = vec![
