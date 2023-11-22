@@ -213,6 +213,14 @@ void dcd_init(uint8_t rhport)
 {
 	(void) rhport;
 
+    for (uint32_t i = 0; i != 1000000; ++i) {
+        usb_device_controller_reset_write(1);
+    }
+
+    for (uint32_t i = 0; i != 1000000; ++i) {
+        usb_device_controller_reset_write(0);
+    }
+
 	usb_device_controller_connect_write(0);
 
 	usb_setup_reset_write(1);

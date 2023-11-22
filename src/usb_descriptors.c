@@ -252,11 +252,11 @@ uint16_t const* tud_descriptor_string_cb(uint8_t index, uint16_t langid)
     chr_count = 1;
   }
   else if(index == 3){
-    uint8_t uuid[8];
+    uint8_t uuid[8] = {0};
 
-#if 0
-    spiflash_read_uuid(uuid);
-#endif
+    // TODO
+    // spiflash_read_uuid(uuid);
+
     chr_count = 19;
 
     uint16_t* s = &_desc_str[1];

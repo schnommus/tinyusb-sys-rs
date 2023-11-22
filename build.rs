@@ -40,7 +40,6 @@ fn main() {
     let common_args = vec![
         "-march=rv32i2p0_mac",
         "-D__vexriscv__",
-        "-g3",
         "-no-pie",
         "-fomit-frame-pointer",
         "-Wall",
