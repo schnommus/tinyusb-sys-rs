@@ -20,6 +20,10 @@ fn main() {
         let mut f = File::create(out_dir.join("tusb_config.h"))
             .expect("Failed to create tusb_config.h");
         f.write_all(include_bytes!("src/tusb_config.h")).ok();
+
+        let mut f = File::create(out_dir.join("stdio.h"))
+            .expect("Failed to create tusb_config.h");
+        f.write_all(include_bytes!("printf/stdio.h")).ok();
     }
 
     let stdlib_litex_include_paths = vec![
@@ -30,14 +34,13 @@ fn main() {
         concat!(env!("BUILD_DIR"),
                 "/../../deps/pythondata-software-picolibc/pythondata_software_picolibc/data/newlib/libc/include"),
         concat!(env!("BUILD_DIR"),
-                "/../../deps/pythondata-software-picolibc/pythondata_software_picolibc/data/newlib/libc/tinystdio"),
-        concat!(env!("BUILD_DIR"),
                 "/../../deps/litex/litex/soc/cores/cpu/vexriscv"),
         concat!(env!("BUILD_DIR"),
                 "/../../deps/litex/litex/soc/software/include"),
     ];
 
     let common_args = vec![
+        "-DCFG_TUSB_DEBUG=3",
         "-march=rv32i2p0_mac",
         "-D__vexriscv__",
         "-no-pie",
@@ -49,7 +52,7 @@ fn main() {
         "-DCFG_TUSB_MCU=OPT_MCU_LUNA_EPTRI",
         "-fdata-sections",
         "-ffunction-sections",
-        "-O3",
+        "-Os",
     ];
 
     let clang_args = vec![
@@ -65,6 +68,8 @@ fn main() {
     add_all_c_files_in_dir(&mut build, "tinyusb/src");
     build.file("luna_eptri/dcd_eptri.c");
     build.file("src/usb_descriptors.c");
+    build.file("printf/printf.c");
+    build.file("printf/ctype_.c");
 
     for flag in common_args.iter() {
         build.flag(flag);
