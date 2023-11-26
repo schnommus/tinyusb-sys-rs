@@ -477,15 +477,19 @@ void dcd_int_handler(uint8_t rhport)
 	// Handle USB interrupts for as long as any are pending.
 	while(1) {
 		if (usb_device_controller_ev_pending_read()) {
+            _putchar('1');
 			handle_reset();
 		}
 		else if (usb_setup_ev_pending_read()) {
+            _putchar('2');
 			handle_setup();
 		}
 		else if (usb_in_ep_ev_pending_read()) {
+            _putchar('3');
 			handle_in();
 		} 
 		else if (usb_out_ep_ev_pending_read()) {
+            _putchar('4');
 			handle_out();
 		} 
 		else {
