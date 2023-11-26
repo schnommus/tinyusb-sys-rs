@@ -53,6 +53,8 @@ uint8_t* volatile tx_buffer[EP_COUNT];
 volatile uint16_t tx_buffer_max[EP_COUNT];
 volatile uint8_t reset_count;
 
+static void handle_in(void);
+
 //--------------------------------------------------------------------+
 // PIPE HELPER
 //--------------------------------------------------------------------+
@@ -262,7 +264,11 @@ void dcd_set_address(uint8_t rhport, uint8_t dev_addr)
 	dcd_edpt_xfer(rhport, tu_edpt_addr(0, TUSB_DIR_IN), NULL, 0);
 
 	// Wait for the response packet to get sent
-	while (tx_active);
+	while (tx_active) {
+        // HACK: this seems to be enough of a hack such that we
+        // can call tud_task_ext() from an ISR context.
+        handle_in();
+    }
 
 	// Activate the new address
 	usb_setup_address_write(dev_addr);
