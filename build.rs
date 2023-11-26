@@ -40,7 +40,7 @@ fn main() {
     ];
 
     let common_args = vec![
-        "-DCFG_TUSB_DEBUG=3",
+        "-DCFG_TUSB_DEBUG=0",
         "-march=rv32i2p0_mac",
         "-D__vexriscv__",
         "-no-pie",
