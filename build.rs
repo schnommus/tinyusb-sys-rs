@@ -40,7 +40,7 @@ fn main() {
     ];
 
     let common_args = vec![
-        "-DCFG_TUSB_DEBUG=0",
+        "-DCFG_TUSB_DEBUG=3",
         "-march=rv32i2p0_mac",
         "-D__vexriscv__",
         "-no-pie",
@@ -67,7 +67,7 @@ fn main() {
     let mut build = Build::new();
     add_all_c_files_in_dir(&mut build, "tinyusb/src");
     build.file("luna_eptri/dcd_eptri.c");
-    build.file("src/usb_descriptors.c");
+    build.file("tinyusb/examples/device/midi_test/src/usb_descriptors.c");
     build.file("printf/printf.c");
     build.file("printf/ctype_.c");
 
